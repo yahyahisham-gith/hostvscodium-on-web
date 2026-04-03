@@ -10,6 +10,14 @@ const httpProxy = require('http-proxy');
 const app = express();
 app.use(express.json());
 
+// --- DYNAMIC PATH SETTINGS ---
+const PROJECTS_ROOT = path.join(__dirname, 'projects');
+const PULLED_BASE = path.join(__dirname, 'files');
+
+// Ensure directories exist relative to the script location
+if (!fs.existsSync(PROJECTS_ROOT)) fs.mkdirSync(PROJECTS_ROOT, { recursive: true });
+if (!fs.existsSync(PULLED_BASE)) fs.mkdirSync(PULLED_BASE, { recursive: true });
+
 // --- PROXY SETUP WITH ERROR HANDLING ---
 const proxy = httpProxy.createProxyServer({});
 
@@ -21,12 +29,6 @@ proxy.on('error', (err, req, res) => {
     console.log("⚠️ Proxy Error:", err.code);
 });
 
-// --- SETTINGS ---
-const PROJECTS_ROOT = 'D:/hostvscodium-on-web/projects';
-const PULLED_BASE = 'D:/hostvscodium-on-web/files';
-
-if (!fs.existsSync(PROJECTS_ROOT)) fs.mkdirSync(PROJECTS_ROOT, { recursive: true });
-
 // --- SSL LOAD ---
 let sslOptions = null;
 try {
@@ -34,7 +36,10 @@ try {
     const key = files.find(f => f.endsWith('.key.pem') || f.endsWith('.key') || (f.endsWith('.pem') && f.toLowerCase().includes('key')));
     const cert = files.find(f => f.endsWith('.cert.pem') || f.endsWith('.cert') || f.endsWith('.crt') || (f.endsWith('.pem') && !f.toLowerCase().includes('key')));
     if (key && cert) {
-        sslOptions = { key: fs.readFileSync(path.join(__dirname, key)), cert: fs.readFileSync(path.join(__dirname, cert)) };
+        sslOptions = { 
+            key: fs.readFileSync(path.join(__dirname, key)), 
+            cert: fs.readFileSync(path.join(__dirname, cert)) 
+        };
         console.log(`🔐 SSL Active`);
     }
 } catch (e) {}
@@ -58,14 +63,13 @@ const occupy = (pub, target, isExp = false) => {
 
 // --- ENGINE LAUNCHER ---
 const launch = (type, port) => {
-    const baseDir = path.join(PULLED_BASE).replace(/\//g, '\\');
-    const availableFolders = fs.readdirSync(baseDir);
+    const availableFolders = fs.readdirSync(PULLED_BASE);
     const binName = type === 'vscodium' ? 'codium.cmd' : 'code.cmd';
     
     let finalBinPath = null;
     for (const folder of availableFolders) {
         if (folder.toLowerCase().includes(type)) {
-            const testPath = path.join(baseDir, folder, 'bin', binName);
+            const testPath = path.join(PULLED_BASE, folder, 'bin', binName);
             if (fs.existsSync(testPath)) { finalBinPath = testPath; break; }
         }
     }
@@ -75,26 +79,32 @@ const launch = (type, port) => {
     const userSettingsDir = path.join(sessionDir, 'User');
     if (!fs.existsSync(userSettingsDir)) fs.mkdirSync(userSettingsDir, { recursive: true });
     
-    const settings = Object.assign({}, {
+    const settings = {
         "workbench.colorTheme": "Default Dark Modern",
         "terminal.integrated.defaultProfile.windows": "PowerShell",
         "powershell.integratedConsole.showOnStartup": true,
         "terminal.integrated.gpuAcceleration": "off"
-    });
+    };
     fs.writeFileSync(path.join(userSettingsDir, 'settings.json'), JSON.stringify(settings, null, 4));
 
     const fullCmd = `"${finalBinPath}" serve-web --host 127.0.0.1 --port ${port} --without-connection-token --accept-server-license-terms --server-data-dir "${sessionDir}"`;
     spawn('cmd.exe', ['/s', '/c', `"${fullCmd}"`], { cwd: path.dirname(finalBinPath), shell: true, windowsVerbatimArguments: true });
 };
 
+// Start Editors
 launch('vscodium', 8080);
 launch('vscode', 8081);
+
+// Bridge Ports
 occupy(3000, null, true);
 occupy(8000, 8080);
 occupy(8001, 8081);
 
 // --- UI ---
 app.get('/', (req, res) => {
+    // Escape backslashes for the frontend string
+    const frontendProjectsPath = PROJECTS_ROOT.replace(/\\/g, '/');
+    
     res.send(`<body style="background:#1e1e1e;color:white;font-family:sans-serif;display:flex;align-items:center;justify-content:center;height:100vh;margin:0;">
         <div style="background:#252526;padding:30px;border-radius:12px;width:450px;text-align:center;border:1px solid #333;">
             <h2 style="color:#007acc;margin-bottom:20px;">Editor Manager</h2>
@@ -113,18 +123,15 @@ app.get('/', (req, res) => {
                 await fetch('/create',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({name:n})});
 
                 const p = t === 'vscodium' ? 8000 : 8001;
-                const path = 'D:/hostvscodium-on-web/projects/' + n;
+                const path = '${frontendProjectsPath}/' + n;
                 const folderParam = '/?folder=vscode-remote://localhost' + encodeURIComponent(path);
                 
                 let finalUrl;
                 if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
-                    // Localhost Logic
                     finalUrl = window.location.origin.replace(':3000', ':' + p) + folderParam;
                 } else {
-                    // Dev Tunnel Logic (swaps -3000 for -8000/-8001)
                     finalUrl = window.location.origin.replace('-3000', '-' + p) + folderParam;
                 }
-
                 window.open(finalUrl, '_blank');
             }
 
@@ -145,7 +152,7 @@ app.post('/create', (req, res) => {
     const target = path.join(PROJECTS_ROOT, req.body.name);
     if (!fs.existsSync(target)) {
         fs.mkdirSync(target, { recursive: true });
-        fs.writeFileSync(path.join(target, 'main.js'), '// New Project');
+        fs.writeFileSync(path.join(target, 'main.js'), '// New Project Created');
     }
     res.json({success:true});
 });
