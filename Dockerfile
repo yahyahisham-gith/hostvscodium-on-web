@@ -18,5 +18,5 @@ COPY . .
 # Environment
 ENV PORT=3000
 EXPOSE 3000
-
+RUN chmod -R +x /usr/src/app/files/*/bin/
 CMD [ "node", "server.js" ]
