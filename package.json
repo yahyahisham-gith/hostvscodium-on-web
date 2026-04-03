@@ -5,7 +5,10 @@
   "main": "server.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node server.js"
+    "i": "npx npm install",
+    "start": "npx node server.js",
+    "start --watch": "npx node --watch server.js",
+    "start --watch --nodemon": "npx nodemon server.js"
   },
   "keywords": [],
   "author": "",
