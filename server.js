@@ -34,7 +34,7 @@ app.use('/vscode', (req, res) => {
     proxy.web(req, res, { target: 'http://127.0.0.1:8081' });
 });
 
-// --- ENGINE LAUNCHER (Linux & Windows Compatible) ---
+// --- ENGINE LAUNCHER ---
 const launch = (type, port) => {
     const availableFolders = fs.readdirSync(PULLED_BASE);
     const isWin = process.platform === "win32";
@@ -70,7 +70,6 @@ const launch = (type, port) => {
     });
 };
 
-// Start internal editors
 launch('vscodium', 8080);
 launch('vscode', 8081);
 
@@ -81,9 +80,10 @@ app.get('/', (req, res) => {
         <div style="background:#252526;padding:30px;border-radius:12px;width:450px;text-align:center;border:1px solid #333;">
             <h2 style="color:#007acc;margin-bottom:20px;">Editor Manager</h2>
             <input type="text" id="n" placeholder="Project Name" style="padding:12px;width:90%;margin-bottom:20px;background:#333;color:white;border:1px solid #555;border-radius:6px;text-align:center;">
-            <div style="display:flex; gap:10px; justify-content:center;">
-                <button onclick="go('vscodium')" style="flex:1;padding:12px;background:#007acc;color:white;border:none;border-radius:6px;cursor:pointer;font-weight:bold;">Launch Codium</button>
-                <button onclick="go('vscode')" style="flex:1;padding:12px;background:#2ecc71;color:white;border:none;border-radius:6px;cursor:pointer;font-weight:bold;">Launch VS Code</button>
+            <div style="display:flex; gap:10px; flex-wrap:wrap; justify-content:center;">
+                <button onclick="go('vscodium')" style="flex:1;min-width:140px;padding:12px;background:#007acc;color:white;border:none;border-radius:6px;cursor:pointer;font-weight:bold;">Launch Codium</button>
+                <button onclick="go('vscode')" style="flex:1;min-width:140px;padding:12px;background:#2ecc71;color:white;border:none;border-radius:6px;cursor:pointer;font-weight:bold;">Launch VS Code</button>
+                <button onclick="del()" style="width:100%;padding:10px;background:#e74c3c;color:white;border:none;border-radius:6px;cursor:pointer;font-weight:bold;margin-top:10px;">🗑️ Delete Project</button>
             </div>
         </div>
         <script>
@@ -94,29 +94,52 @@ app.get('/', (req, res) => {
                 const folderParam = '/?folder=vscode-remote://localhost' + encodeURIComponent('${frontendPath}/' + n);
                 window.open(window.location.origin + '/' + t + folderParam, '_blank');
             }
+
+            async function del(){
+                const n = document.getElementById('n').value; 
+                if(!n) return alert("Project Name Required");
+                if(!confirm("Delete '" + n + "'?")) return;
+                const res = await fetch('/delete',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({name:n})});
+                const data = await res.json();
+                alert(data.message);
+            }
         </script>
     </body>`);
 });
 
+// --- API ---
 app.post('/create', (req, res) => {
     const target = path.join(PROJECTS_ROOT, req.body.name);
-    if (!fs.existsSync(target)) fs.mkdirSync(target, { recursive: true });
+    if (!fs.existsSync(target)) {
+        fs.mkdirSync(target, { recursive: true });
+        fs.writeFileSync(path.join(target, 'main.js'), '// New Project Created');
+    }
     res.json({success:true});
+});
+
+app.post('/delete', (req, res) => {
+    const target = path.join(PROJECTS_ROOT, req.body.name);
+    if (fs.existsSync(target)) {
+        try {
+            fs.rmSync(target, { recursive: true, force: true });
+            res.json({success:true, message: "Deleted successfully."});
+        } catch (e) {
+            res.json({success:false, message: "Delete failed. File in use."});
+        }
+    } else {
+        res.json({success:false, message: "Project not found."});
+    }
 });
 
 // --- SERVER & WEBSOCKET UPGRADE ---
 const server = http.createServer(app);
 
 server.on('upgrade', (req, socket, head) => {
-    // Detect which editor the WebSocket belongs to based on the URL path
     const targetPort = req.url.startsWith('/vscodium') ? 8080 : (req.url.startsWith('/vscode') ? 8081 : null);
-    
     if (targetPort) {
         proxy.ws(req, socket, head, { target: `http://127.0.0.1:${targetPort}` });
     }
 });
 
 const PORT = process.env.PORT || 3000;
-server.listen(PORT, '0.0.0.0', () => {
-    console.log(`✅ Server live on port ${PORT}`);
-});
+server.listen(PORT, '0.0.0.0', () => console.log(`✅ Server live on port ${PORT}`));
