@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+	<PackageManifest Version="2.0.0" xmlns="http://schemas.microsoft.com/developer/vsx-schema/2011" xmlns:d="http://schemas.microsoft.com/developer/vsx-schema-design/2011">
+		<Metadata>
+			<Identity Language="en-US" Id="php-intelephense-language-support" Version="1.16.5" Publisher="AnessaEah" />
+			<DisplayName>PHP Language Support</DisplayName>
+			<Description xml:space="preserve">Comprehensive PHP code intelligence, autocompletion, symbol navigation, type analysis, error detection, code formatting, and more for Visual Studio Code. Boost your PHP development workflow with advanced features like definition lookup, signature help, workspace-wide search, and powerful diagnostics.</Description>
+			<Tags>php,intellisense,references,symbols,format,multi-root ready,language server,autocomplete,language,support,formatter,linter,diagnostics,phpdoc,php7,php8,indexer,goto definition,signature help,hover,type analysis,refactoring,code lens,composer,workspace,snippets,highlighting,class,function,method,namespace,import,completion,error detection,code actions,type inference,debugging,project,extensions,tools,framework,mvc,static analysis,phpunit,laravel,symfony,code navigation,docblocks,code style,auto import,intelligent,ide,editor</Tags>
+			<Categories>Programming Languages,Linters,Formatters,Debuggers,Snippets,Intellisense,Testing,Other,Diagnostics,Refactoring,Code Navigation,Code Intelligence,Editor Enhancements</Categories>
+			<GalleryFlags>Public Preview</GalleryFlags>
+			
+			<Properties>
+				<Property Id="Microsoft.VisualStudio.Code.Engine" Value="^1.91.0" />
+				<Property Id="Microsoft.VisualStudio.Code.ExtensionDependencies" Value="" />
+				<Property Id="Microsoft.VisualStudio.Code.ExtensionPack" Value="" />
+				<Property Id="Microsoft.VisualStudio.Code.ExtensionKind" Value="workspace" />
+				<Property Id="Microsoft.VisualStudio.Code.LocalizedLanguages" Value="" />
+				<Property Id="Microsoft.VisualStudio.Code.EnabledApiProposals" Value="" />
+				
+				<Property Id="Microsoft.VisualStudio.Code.ExecutesCode" Value="true" />
+				
+				<Property Id="Microsoft.VisualStudio.Services.Links.Source" Value="https://github.com/AnessaEah/vscode-intelephense-extension.git" />
+				<Property Id="Microsoft.VisualStudio.Services.Links.Getstarted" Value="https://github.com/AnessaEah/vscode-intelephense-extension.git" />
+				<Property Id="Microsoft.VisualStudio.Services.Links.GitHub" Value="https://github.com/AnessaEah/vscode-intelephense-extension.git" />
+				<Property Id="Microsoft.VisualStudio.Services.Links.Support" Value="https://github.com/AnessaEah/vscode-intelephense-extension/issues" />
+				<Property Id="Microsoft.VisualStudio.Services.Links.Learn" Value="https://github.com/AnessaEah/vscode-intelephense-extension#readme" />
+				
+				
+				<Property Id="Microsoft.VisualStudio.Services.GitHubFlavoredMarkdown" Value="true" />
+				<Property Id="Microsoft.VisualStudio.Services.Content.Pricing" Value="Free"/>
+
+				
+				
+			</Properties>
+			<License>extension/LICENSE.txt</License>
+			<Icon>extension/images/elephpant.png</Icon>
+		</Metadata>
+		<Installation>
+			<InstallationTarget Id="Microsoft.VisualStudio.Code"/>
+		</Installation>
+		<Dependencies/>
+		<Assets>
+			<Asset Type="Microsoft.VisualStudio.Code.Manifest" Path="extension/package.json" Addressable="true" />
+			<Asset Type="Microsoft.VisualStudio.Services.Content.Details" Path="extension/readme.md" Addressable="true" />
+<Asset Type="Microsoft.VisualStudio.Services.Content.Changelog" Path="extension/changelog.md" Addressable="true" />
+<Asset Type="Microsoft.VisualStudio.Services.Content.License" Path="extension/LICENSE.txt" Addressable="true" />
+<Asset Type="Microsoft.VisualStudio.Services.Icons.Default" Path="extension/images/elephpant.png" Addressable="true" />
+		</Assets>
+	</PackageManifest>

@@ -1,0 +1,39 @@
+{
+	"name": "github-codespaces-connector",
+	"displayName": "GitHub Codespaces Connector",
+	"description": "Connect to GitHub Codespaces using gh CLI",
+	"version": "0.0.2",
+	"publisher": "SmartManoj",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/SmartManoj/Github-Codespaces-Connector.git"
+	},
+	"icon": "images/logo.png",
+	"engines": {
+		"vscode": "^1.72.0"
+	},
+	"activationEvents": [
+		"onCommand:codespaces.connect"
+	],
+	"main": "./dist/extension.js",
+	"contributes": {
+		"commands": [
+			{
+				"command": "codespaces.connect",
+				"title": "Connect to GitHub Codespaces"
+			}
+		]
+	},
+	"scripts": {
+		"build": "tsc"
+	},
+	"dependencies": {},
+	"devDependencies": {
+		"@types/vscode": "^1.72.0"
+	},
+	"__metadata": {
+		"installedTimestamp": 1774867930765,
+		"targetPlatform": "universal",
+		"size": 1324652
+	}
+}

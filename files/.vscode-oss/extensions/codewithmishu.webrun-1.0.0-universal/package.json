@@ -1,0 +1,190 @@
+{
+	"name": "webrun",
+	"displayName": "WebRun - One-Click Dev Server",
+	"publisher": "codewithmishu",
+	"version": "1.0.0",
+	"description": "🚀 One-click dev server for any project! Auto-detects React, Vue, Next.js, Node.js, Python, and more. No more terminal commands!",
+	"icon": "images/icon.png",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/codewithmishu/WebRun.git"
+	},
+	"bugs": {
+		"url": "https://github.com/codewithmishu/WebRun/issues"
+	},
+	"homepage": "https://github.com/codewithmishu/WebRun#readme",
+	"license": "MIT",
+	"engines": {
+		"vscode": "^1.108.0"
+	},
+	"categories": [
+		"Other",
+		"Programming Languages",
+		"Debuggers"
+	],
+	"keywords": [
+		"dev server",
+		"live server",
+		"react",
+		"vue",
+		"nextjs",
+		"vite",
+		"python",
+		"flask",
+		"django",
+		"fastapi",
+		"auto-detect",
+		"one-click",
+		"development"
+	],
+	"activationEvents": [
+		"onStartupFinished"
+	],
+	"main": "./dist/extension.js",
+	"contributes": {
+		"commands": [
+			{
+				"command": "webrun.run",
+				"title": "WebRun: Start Dev Server",
+				"icon": "$(play)"
+			},
+			{
+				"command": "webrun.stop",
+				"title": "WebRun: Stop Server",
+				"icon": "$(debug-stop)"
+			},
+			{
+				"command": "webrun.restart",
+				"title": "WebRun: Restart Server",
+				"icon": "$(debug-restart)"
+			},
+			{
+				"command": "webrun.detect",
+				"title": "WebRun: Detect Project Type",
+				"icon": "$(search)"
+			},
+			{
+				"command": "webrun.showProjectInfo",
+				"title": "WebRun: Show Project Info",
+				"icon": "$(info)"
+			},
+			{
+				"command": "webrun.selectProjectType",
+				"title": "WebRun: Select Project Type Manually",
+				"icon": "$(edit)"
+			}
+		],
+		"keybindings": [
+			{
+				"command": "webrun.run",
+				"key": "ctrl+shift+r",
+				"mac": "cmd+shift+r",
+				"when": "!terminalFocus"
+			},
+			{
+				"command": "webrun.stop",
+				"key": "ctrl+shift+s",
+				"mac": "cmd+shift+s",
+				"when": "!terminalFocus"
+			},
+			{
+				"command": "webrun.restart",
+				"key": "ctrl+shift+alt+r",
+				"mac": "cmd+shift+alt+r"
+			}
+		],
+		"menus": {
+			"commandPalette": [
+				{
+					"command": "webrun.run",
+					"when": "workspaceFolderCount > 0"
+				},
+				{
+					"command": "webrun.stop",
+					"when": "workspaceFolderCount > 0"
+				},
+				{
+					"command": "webrun.restart",
+					"when": "workspaceFolderCount > 0"
+				},
+				{
+					"command": "webrun.detect",
+					"when": "workspaceFolderCount > 0"
+				},
+				{
+					"command": "webrun.showProjectInfo",
+					"when": "workspaceFolderCount > 0"
+				},
+				{
+					"command": "webrun.selectProjectType",
+					"when": "workspaceFolderCount > 0"
+				}
+			],
+			"editor/title/run": [
+				{
+					"command": "webrun.run",
+					"group": "navigation"
+				}
+			]
+		},
+		"configuration": {
+			"title": "WebRun",
+			"properties": {
+				"webrun.liveServerPort": {
+					"type": "number",
+					"default": 5500,
+					"description": "Port number for static HTML live server"
+				},
+				"webrun.autoDetect": {
+					"type": "boolean",
+					"default": true,
+					"description": "Automatically detect project type on workspace open"
+				},
+				"webrun.showStatusBar": {
+					"type": "boolean",
+					"default": true,
+					"description": "Show WebRun button in status bar"
+				},
+				"webrun.customCommands": {
+					"type": "object",
+					"default": {},
+					"description": "Custom run commands for specific project types",
+					"additionalProperties": {
+						"type": "string"
+					}
+				}
+			}
+		}
+	},
+	"scripts": {
+		"vscode:prepublish": "npm run package",
+		"compile": "npm run check-types && npm run lint && node esbuild.js",
+		"watch": "npm-run-all -p watch:*",
+		"watch:esbuild": "node esbuild.js --watch",
+		"watch:tsc": "tsc --noEmit --watch --project tsconfig.json",
+		"package": "npm run check-types && npm run lint && node esbuild.js --production",
+		"compile-tests": "tsc -p . --outDir out",
+		"watch-tests": "tsc -p . -w --outDir out",
+		"pretest": "npm run compile-tests && npm run compile && npm run lint",
+		"check-types": "tsc --noEmit",
+		"lint": "eslint src",
+		"test": "vscode-test"
+	},
+	"devDependencies": {
+		"@types/vscode": "^1.108.1",
+		"@types/mocha": "^10.0.10",
+		"@types/node": "22.x",
+		"typescript-eslint": "^8.54.0",
+		"eslint": "^9.39.2",
+		"esbuild": "^0.27.2",
+		"npm-run-all": "^4.1.5",
+		"typescript": "^5.9.3",
+		"@vscode/test-cli": "^0.0.12",
+		"@vscode/test-electron": "^2.5.2"
+	},
+	"__metadata": {
+		"installedTimestamp": 1774868041234,
+		"targetPlatform": "universal",
+		"size": 96812
+	}
+}
